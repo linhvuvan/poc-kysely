@@ -1,3 +1,4 @@
+import { sql } from 'kysely';
 import { BOOK_TABLE_NAME, InsertableBook, db } from './db';
 
 type Book = {
@@ -19,6 +20,6 @@ export const BookRepo = {
     }));
   },
   deleteAll: async (): Promise<void> => {
-    await db.deleteFrom(BOOK_TABLE_NAME).execute();
+    await sql`delete from book`.execute(db);
   },
 };
