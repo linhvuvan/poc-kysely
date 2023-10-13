@@ -3,8 +3,7 @@ import { BookRepo } from './book.repo';
 (async () => {
   await BookRepo.deleteAll();
 
-  const newBook = { title: 'Moby Dick', author: 'Herman' };
-  await BookRepo.insert(newBook);
+  await BookRepo.insert({ title: 'Moby Dick', author: 'Herman' });
 
   const books = await BookRepo.findAll();
 
