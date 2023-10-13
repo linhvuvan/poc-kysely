@@ -2,7 +2,7 @@ import { Kysely, PostgresDialect, Generated, QueryCreator } from 'kysely';
 import { Pool } from 'pg';
 
 type BookTable = {
-  id: Generated<number>;
+  book_id: Generated<number>;
   title: string;
   author: string;
 };
@@ -24,6 +24,7 @@ const dialect = new PostgresDialect({
 
 const db = new Kysely<Database>({
   dialect,
+  log: console.log,
 });
 
 (async () => {
