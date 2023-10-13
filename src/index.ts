@@ -2,13 +2,19 @@ import { Kysely, PostgresDialect, Generated, QueryCreator } from 'kysely';
 import { Pool } from 'pg';
 
 type BookTable = {
-  book_id: Generated<number>;
+  bookId: Generated<number>;
   title: string;
   author: string;
 };
 
 type Database = {
   book: BookTable;
+};
+
+type Book = {
+  bookId: number;
+  title: string;
+  author: string;
 };
 
 const dialect = new PostgresDialect({
@@ -27,19 +33,23 @@ const db = new Kysely<Database>({
   log: console.log,
 });
 
+const BookRepo = {
+  insert: async (book: Book): Promise<void> => {
+    await db.insertInto('book').values(book).execute();
+  },
+  findAll: async (): Promise<Book[]> => {
+    const books = await db.selectFrom('book').selectAll().execute();
+
+    return books;
+  },
+};
+
 (async () => {
   await db.deleteFrom('book').execute();
 
-  await db
-    .insertInto('book')
-    .values({ title: 'Moby Dick', author: 'Herman' })
-    .execute();
+  await BookRepo.insert({ bookId: 1, title: 'Moby Dick', author: 'Herman' });
 
-  const books = await db
-    .selectFrom('book')
-    .selectAll()
-    .where('title', '=', 'Moby Dick')
-    .execute();
+  const books = await BookRepo.findAll();
 
   console.log('books', books);
 })();
