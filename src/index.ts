@@ -1,10 +1,10 @@
-import { Kysely, PostgresDialect, Generated, QueryCreator } from 'kysely';
+import { Kysely, PostgresDialect, Generated, Insertable } from 'kysely';
 import { Pool } from 'pg';
 
 type BookTable = {
   bookId: Generated<number>;
   title: string;
-  author: string;
+  author: string | null;
 };
 
 type Database = {
@@ -14,7 +14,7 @@ type Database = {
 type Book = {
   bookId: number;
   title: string;
-  author: string;
+  author?: string;
 };
 
 const dialect = new PostgresDialect({
@@ -34,20 +34,23 @@ const db = new Kysely<Database>({
 });
 
 const BookRepo = {
-  insert: async (book: Book): Promise<void> => {
+  insert: async (book: Insertable<BookTable>): Promise<void> => {
     await db.insertInto('book').values(book).execute();
   },
   findAll: async (): Promise<Book[]> => {
     const books = await db.selectFrom('book').selectAll().execute();
 
-    return books;
+    return books.map((book) => ({
+      ...book,
+      author: book.author || undefined,
+    }));
   },
 };
 
 (async () => {
   await db.deleteFrom('book').execute();
 
-  await BookRepo.insert({ bookId: 1, title: 'Moby Dick', author: 'Herman' });
+  await BookRepo.insert({ title: 'Moby Dick', author: 'Herman' });
 
   const books = await BookRepo.findAll();
 
