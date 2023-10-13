@@ -45,12 +45,16 @@ const BookRepo = {
       author: book.author || undefined,
     }));
   },
+  deleteAll: async (): Promise<void> => {
+    await db.deleteFrom('book').execute();
+  },
 };
 
 (async () => {
-  await db.deleteFrom('book').execute();
+  await BookRepo.deleteAll();
 
-  await BookRepo.insert({ title: 'Moby Dick', author: 'Herman' });
+  const newBook = { title: 'Moby Dick', author: 'Herman' };
+  await BookRepo.insert(newBook);
 
   const books = await BookRepo.findAll();
 
