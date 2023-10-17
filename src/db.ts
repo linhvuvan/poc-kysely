@@ -9,6 +9,7 @@ import {
   QueryResult,
   PluginTransformQueryArgs,
   RootOperationNode,
+  ColumnType,
 } from 'kysely';
 import { Pool } from 'pg';
 
@@ -31,6 +32,11 @@ const convertNullToUndefined = <T>(object: T): T => {
 
     if (value === null) {
       newObject[key] = undefined as unknown as T[typeof key];
+      continue;
+    }
+
+    if (value instanceof Date) {
+      newObject[key] = value;
       continue;
     }
 

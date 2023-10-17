@@ -15,4 +15,8 @@ export type Book = {
   const books = await BookRepo.findAll();
 
   console.log('books', books);
+
+  const [firstBook] = books;
+
+  console.log('first book', firstBook);
 })();
