@@ -3,7 +3,7 @@ import { BookRepo } from './book.repo';
 export type Book = {
   bookId: number;
   title: string;
-  author?: string;
+  author: string | null;
   createdAt: Date;
 };
 
@@ -15,8 +15,4 @@ export type Book = {
   const books = await BookRepo.findAll();
 
   console.log('books', books);
-
-  const [firstBook] = books;
-
-  console.log('first book', firstBook);
 })();

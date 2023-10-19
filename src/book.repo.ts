@@ -1,24 +1,31 @@
-import { sql } from 'kysely';
-import { BOOK_TABLE_NAME, InsertableBookTable, db } from './db';
+import { Insertable, sql } from 'kysely';
+import { BookTable, db } from './db';
 import { Book } from '.';
 
 export const BookRepo = {
-  insert: async (book: InsertableBookTable): Promise<void> => {
-    await db.insertInto(BOOK_TABLE_NAME).values(book).execute();
+  insert: async (book: Insertable<BookTable>): Promise<void> => {
+    await db.insertInto('public.book').values(book).execute();
   },
   findAll: async (): Promise<Book[]> => {
-    const books = await db.selectFrom(BOOK_TABLE_NAME).selectAll().execute();
+    const books = await db.selectFrom('public.book').selectAll().execute();
 
     return books;
   },
   deleteAll: async (): Promise<void> => {
-    await sql`delete from book`.execute(db);
+    await db.deleteFrom('public.book').execute();
   },
   findById: (bookId: Book['bookId']): Promise<Book | undefined> => {
     return db
-      .selectFrom(BOOK_TABLE_NAME)
+      .selectFrom('public.book')
       .selectAll()
       .where('bookId', '=', bookId)
+      .executeTakeFirst();
+  },
+  deleteById: async (bookId: Book['bookId']): Promise<Book | undefined> => {
+    return db
+      .deleteFrom('public.book')
+      .where('bookId', '=', bookId)
+      .returningAll()
       .executeTakeFirst();
   },
 };
